@@ -1,78 +1,147 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr-FR">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- CSS only -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="stylesheet" href="styles/main.css">
-    <title>My movies</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="./styles/main.css">
+    <title>My Movies</title>
 </head>
-<body class="container-fluid">
-    <header>
 
-    <!--Navbar-->
-    <nav class="navbar navbar-expand-lg bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#"><i class="bi bi-film"></i> My Movies</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Accueil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="views/create.php">Publier un film</a>
-                    </li>
-                    
-                </ul>
+<body>
+    <?php
+    session_start();
+    function loadClass(string $class)
+    {
+        if ($class === "DotEnv") {
+            require_once "./config/$class.php";
+        } else if (str_contains($class, "Controller")) {
+            require_once "./Controller/$class.php";
+        } else {
+            require_once "./Entity/$class.php";
+        }
+    }
+
+    spl_autoload_register("loadClass");
+
+    $movieController = new MovieController();
+    $movies = $movieController->getAll();
+    $categoryController = new CategoryController();
+
+    /* $movie = new Movie([
+        "id" => 1,
+        "title" => "Avatar",
+        "description" => "Un film avec des gens bleus... :)",
+        "image_url" => "https://m.media-amazon.com/images/I/615Yl386WYL._AC_SY606_.jpg",
+        "release_date" => "2009-12-16",
+        "director" => "James Cameron",
+        "category_id" => 3
+    ]);
+    $firstName = "Michael";
+    $firstNames = array("Christelle", "Christophe", $firstName, "Aline");
+    $myInformations = [
+        "firstName" => "Chris",
+        "lastName" => "Chevalier",
+        "age" => 29
+    ];
+    function displayNames(array $names): string
+    {
+        $string = "Dans ma classe, il y a ";
+        $i = 0;
+        while ($i <= sizeof($names) - 1) {
+            if ($i === 2) {
+                $i++;
+                continue;
+            }
+            $string .= $names[$i];
+            $i !== 0 && $string .= ", ";
+            $i++;
+        }
+        return $string . "<br/>";
+    }
+    $firstNames2 = array("Lionel", "Philippe", "Laurent", "Melissa");
+    $result = displayNames($firstNames);
+    echo displayNames($firstNames2);
+    echo $result;
+    echo "J'ai un tableau de " . count($firstNames) . " éléments";
+    for ($i = count($firstNames) - 1; $i >= 0; $i--) {
+        echo "Je m'appelle $firstNames[$i] ! :)";
+    }
+    foreach ($myInformations as $key => $information) {
+        echo "$information ! :)<br/>";
+    } */
+    ?>
+    <header>
+        <nav class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#"><i class="bi bi-film"></i>My Movies</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Accueil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="./views/create.php">Publier un film</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        <?= $_SESSION && $_SESSION["username"] ? "<span>Bienvenue {$_SESSION["username"]} !</span>" : "" ?>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="./views/register.php">S'inscrire</a>
+                        </li>
+                        <li class="nav-item">
+                            <?=
+                            $_SESSION ? '<a class="nav-link" href="./views/disconnect.php">Se déconnecter</a>' :
+                                '<a class="nav-link" href="./views/login.php">Se connecter</a>'
+                            ?>
+
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
     </header>
 
-    <!--Title-->
-    <h1>My movies</h1>
+    <main>
+        <h1>My Movies</h1>
+        <h3>Découvrez et partagez des films !</h3>
+        <img class="logo" src="./images/logo.png" alt="Logo My Movies">
 
-    <h3>Découvrez et partagez vos films!</h3>
-    <img class="logo" src="images/logo.jpg" alt="logo film">
+        <section class="container d-flex justify-content-center">
+            <?php
+            foreach ($movies as $movie) :
+                $category = $categoryController->get($movie->getCategory_id());
+                $releaseDate = new DateTime($movie->getRelease_date());
+            ?>
+                <div class="card mx-3" style="width: 18rem;">
+                    <img src="<?= $movie->getImage_url() ?>" class="card-img-top" alt="<?= $movie->getTitle() ?>">
+                    <div class="card-body">
+                        <h5 class="card-title"><?= $movie->getTitle() ?></h5>
+                        <h6 class="card-subtitle mb-2 text-muted"><?= $releaseDate->format('d/m/Y') ?> - <?= $movie->getDirector() ?></h6>
+                        <p class="card-text"><?= $movie->getDescription() ?></p>
+                        <footer class="blockquote-footer" style="color: <?= $category->getColor() ?>"><?= $category->getName() ?></footer>
+                        <a href="./views/update.php?id=<?= $movie->getId() ?>" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a href="./views/delete.php?id=<?= $movie->getId() ?>" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer"><i class="fa-solid fa-trash-can"></i></a>
+                    </div>
+                </div>
 
-    <!--card movie-->
-    <div class="card" style="width: 18rem;">
-        <img src="https://sadfran.files.wordpress.com/2018/07/87e99eb0661a04d5350105727ac3be23.jpg" class="card-img-top" alt="affiche du film avatar">
-        <div class="card-body">
-            <h5 class="card-title">Avatar</h5>
-            <p class="card-text">Un film avec des gens bleus.</p>
-            <a href="#" class="btn btn-warning"ata-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top" title="Modifier"><i class="bi bi-box-arrow-in-down-left"></i></a>
-            <a href="#" class="btn btn-danger" ata-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top" title="Supprimer"><i class="bi bi-trash"></i></a>
+            <?php endforeach ?>
+        </section>
+    </main>
 
-        </div>
-    </div>
+    <footer>
 
-    <!--card movie-->
-    <div class="card" style="width: 18rem;">
-        <img src="https://images.affiches-et-posters.com//albums/3/2631/medium/affiche-film-titanic-177.jpg" class="card-img-top" alt="affiche du film Titanic">
-        <div class="card-body">
-            <h5 class="card-title">Titanic</h5>
-            <p class="card-text">Un film avec un bateau qui coule.</p>
-            <a href="#" class="btn btn-warning"ata-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top" title="Modifier"><i class="bi bi-box-arrow-in-down-left"></i></a>
-            <a href="#" class="btn btn-danger" ata-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top" title="Supprimer"><i class="bi bi-trash"></i></a>
-
-        </div>
-    </div>
-
-
-    <div>
-        <a class="button" href="/views/create.html">Publiez un film</a>
-    </div>
-
-    
-    <!-- JavaScript Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script src="./scripts/script.js"></script>
 </body>
+
 </html>
